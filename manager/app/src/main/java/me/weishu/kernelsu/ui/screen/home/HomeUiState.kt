@@ -50,10 +50,10 @@ data class HomeUiState(
         get() = ksuVersion != null && !isRootAvailable
 
     val showManagerPrBuildWarning: Boolean
-        get() = isManager && isManagerPrBuild
+        get() = false
 
     val showKernelPrBuildWarning: Boolean
-        get() = isManager && !isManagerPrBuild && isKernelPrBuild
+        get() = false
 
     val hasUpdate: Boolean
         get() = latestVersionInfo.versionCode > currentManagerVersionCode
