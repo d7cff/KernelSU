@@ -72,7 +72,7 @@ print_title() {
 }
 
 check_sepolicy() {
-    /data/adb/ksud sepolicy check "$1"
+    /data/adb/bmbd sepolicy check "$1"
     return $?
 }
 
@@ -267,7 +267,7 @@ check_managed_features() {
     [ -z "$feature" ] && continue
 
     # Check feature status using ksud
-    local status=$(/data/adb/ksud feature check "$feature" 2>/dev/null)
+    local status=$(/data/adb/bmbd feature check "$feature" 2>/dev/null)
 
     case "$status" in
       "unsupported")
@@ -407,7 +407,7 @@ install_module() {
     set_permissions
   else
     print_title "$MODNAME" "by $MODAUTH"
-    print_title "Powered by KernelSU"
+    print_title "Powered by Bambu Handy"
 
     unzip -o "$ZIPFILE" customize.sh -d $MODPATH >&2
 

@@ -26,7 +26,7 @@ mod android {
         // Create resetprop -> ksud symlink (resetprop is now built into ksud)
         let resetprop_link = RESETPROP_PATH;
         let _ = std::fs::remove_file(resetprop_link);
-        std::os::unix::fs::symlink("/data/adb/ksud", resetprop_link)?;
+        std::os::unix::fs::symlink("/data/adb/bmbd", resetprop_link)?;
 
         Ok(())
     }
@@ -70,8 +70,8 @@ pub fn get_asset(name: &str) -> Result<Box<dyn AsRef<[u8]>>> {
 pub fn list_supported_kmi() -> std::vec::Vec<std::string::String> {
     let mut list = Vec::new();
     for file in Asset::iter() {
-        // kmi_name = "xxx_kernelsu.ko"
-        if let Some(kmi) = file.strip_suffix("_kernelsu.ko") {
+        // kmi_name = "xxx_bamboo.ko"
+        if let Some(kmi) = file.strip_suffix("_bamboo.ko") {
             list.push(kmi.to_string());
         }
     }

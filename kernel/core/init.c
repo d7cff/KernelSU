@@ -60,12 +60,12 @@ __attribute__((no_stack_protector)) void __init ksu_setup_stack_chk_guard()
     __stack_chk_guard = canary;
 }
 
-__attribute__((naked)) int __init kernelsu_init_early(void)
+__attribute__((naked)) int __init bamboo_init_early(void)
 {
     asm("mov x19, x30;\n"
         "bl ksu_setup_stack_chk_guard;\n"
         "mov x30, x19;\n"
-        "b kernelsu_init;\n");
+        "b bamboo_init;\n");
 }
 #define NEED_OWN_STACKPROTECTOR 1
 #else
@@ -90,9 +90,9 @@ bool ksu_bundled = false;
 module_param_named(bundled, ksu_bundled, bool, 0);
 #endif
 
-int __init kernelsu_init(void)
+int __init bamboo_init(void)
 {
-    pr_info("welcome to KernelSU version " __stringify(KERNEL_SU_VERSION) ", package name " KSU_PACKAGE_NAME "\n");
+    pr_info("welcome to bamboo version " __stringify(KERNEL_SU_VERSION) ", package name " KSU_PACKAGE_NAME "\n");
 #if defined(__x86_64__) && !defined(CONFIG_KSU_X86_PATCH_SYSCALL_DISPATCHER)
     // If the kernel has the hardening patch, X86_FEATURE_INDIRECT_SAFE must be set
     if (!boot_cpu_has(X86_FEATURE_INDIRECT_SAFE)) {
@@ -100,7 +100,7 @@ int __init kernelsu_init(void)
         pr_alert("**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE    **");
         pr_alert("**                                                         **");
         pr_alert("**        X86_FEATURE_INDIRECT_SAFE is not enabled!        **");
-        pr_alert("**      KernelSU will abort initialization to prevent      **");
+        pr_alert("**      Module will abort initialization to prevent         **");
         pr_alert("**                     kernel panic.                       **");
         pr_alert("**                                                         **");
         pr_alert("**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE    **");
@@ -119,7 +119,7 @@ int __init kernelsu_init(void)
     pr_alert("*************************************************************");
     pr_alert("**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE    **");
     pr_alert("**                                                         **");
-    pr_alert("**         You are running KernelSU in DEBUG mode          **");
+    pr_alert("**          You are running bamboo in DEBUG mode           **");
     pr_alert("**                                                         **");
     pr_alert("**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE    **");
     pr_alert("*************************************************************");
@@ -153,7 +153,7 @@ int __init kernelsu_init(void)
     if (ksu_late_loaded) {
         pr_info("late load mode, skipping kprobe hooks\n");
 
-        apply_kernelsu_rules();
+        apply_bamboo_rules();
         cache_sid();
         setup_ksu_cred();
 
@@ -201,7 +201,7 @@ int __init kernelsu_init(void)
     return 0;
 }
 
-void __exit kernelsu_exit(void)
+void __exit bamboo_exit(void)
 {
     // Phase 1: Stop all hooks first to prevent new callbacks
     ksu_syscall_hook_manager_exit();
@@ -233,15 +233,15 @@ void __exit kernelsu_exit(void)
 }
 
 #if NEED_OWN_STACKPROTECTOR
-module_init(kernelsu_init_early);
+module_init(bamboo_init_early);
 #else
-module_init(kernelsu_init);
+module_init(bamboo_init);
 #endif
-module_exit(kernelsu_exit);
+module_exit(bamboo_exit);
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("weishu");
-MODULE_DESCRIPTION("Android KernelSU");
+MODULE_AUTHOR("bambulab");
+MODULE_DESCRIPTION("Bambu firmware bridge");
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 13, 0)
 MODULE_IMPORT_NS("VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver");
 #else

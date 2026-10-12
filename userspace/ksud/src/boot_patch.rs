@@ -153,7 +153,7 @@ mod android {
             return Ok((file, backup_file));
         }
 
-        bail!("Both /data/adb/ksu and {backup_dir} are not accessible!")
+        bail!("Both /data/adb/bmb and {backup_dir} are not accessible!")
     }
 
     pub(super) fn do_backup(cpio: &mut Cpio, image: &Path) -> Result<()> {
@@ -497,7 +497,7 @@ pub struct BootPatchArgs {
     #[arg(long, required = false)]
     adb_debug_prop: Option<String>,
 
-    /// Do not (re-)install kernelsu, only modify configs (allow_shell, etc.)
+    /// Do not (re-)install bamboo, only modify configs (allow_shell, etc.)
     #[arg(long, default_value = "false")]
     no_install: bool,
 
@@ -510,7 +510,7 @@ pub struct BootPatchArgs {
     ramdisk: bool,
 }
 
-/// KernelSU module params, stored in ramdisk `/ksu_config` (boot-patch) or the
+/// BambuBridge module params, stored in ramdisk `/ksu_config` (boot-patch) or the
 /// injected capsule (boot-patch-v2).
 #[derive(clap::Args, Debug, Default)]
 pub struct KsuConfigArgs {
@@ -762,7 +762,7 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             patcher.replace_kernel(Box::new(Cursor::new(kernel_data)), false);
         }
 
-        let kernelsu_ko: Box<dyn AsRef<[u8]>> = if no_install {
+        let bamboo_ko: Box<dyn AsRef<[u8]>> = if no_install {
             Box::new(Vec::<u8>::new())
         } else if let Some(kmod_path) = kmod {
             Box::new(map_file(&kmod_path)?)
@@ -770,14 +770,14 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             #[cfg(target_os = "android")]
             {
                 println!("- KMI: {kmi}");
-                let name = format!("{kmi}_kernelsu.ko");
+                let name = format!("{kmi}_bamboo.ko");
                 assets::get_asset(&name).with_context(|| format!("Failed to load {name}"))?
             }
             #[cfg(not(target_os = "android"))]
             {
                 println!("- KMI: {kmi}");
                 println!("- Arch: {arch}");
-                let name = format!("{arch}/{kmi}_kernelsu.ko");
+                let name = format!("{arch}/{kmi}_bamboo.ko");
                 assets::get_asset(&name).with_context(|| format!("Failed to load {name}"))?
             }
         };
@@ -811,18 +811,18 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
                 "Cannot work with Magisk patched image"
             );
 
-            println!("- Adding KernelSU LKM");
-            let is_kernelsu_patched = cpio.exists("kernelsu.ko");
+            println!("- Adding BambuBridge LKM");
+            let is_bamboo_patched = cpio.exists("bamboo.ko");
 
-            if !is_kernelsu_patched && cpio.exists("init") {
+            if !is_bamboo_patched && cpio.exists("init") {
                 cpio.mv("init", "init.real")?;
             }
 
             cpio.add("init", CpioEntry::regular(0o755, ksu_init))?;
-            cpio.add("kernelsu.ko", CpioEntry::regular(0o755, kernelsu_ko))?;
+            cpio.add("bamboo.ko", CpioEntry::regular(0o755, bamboo_ko))?;
 
             #[cfg(target_os = "android")]
-            if (backup || (!is_kernelsu_patched && flash))
+            if (backup || (!is_bamboo_patched && flash))
                 && let Err(e) = do_backup(&mut cpio, &boot_image_file)
             {
                 println!("- Backup stock image failed: {e:?}");
@@ -920,7 +920,7 @@ pub fn patch(args: BootPatchArgs) -> Result<()> {
             let output_dir = out.unwrap_or(std::env::current_dir()?);
             let name = out_name.unwrap_or_else(|| {
                 let now = chrono::Utc::now();
-                format!("kernelsu_patched_{}.img", now.format("%Y%m%d_%H%M%S"))
+                format!("bamboo_patched_{}.img", now.format("%Y%m%d_%H%M%S"))
             });
             let output_image = output_dir.join(name);
             std::fs::write(&output_image, &new_boot_bytes).context("write out new boot failed")?;
@@ -1019,8 +1019,8 @@ pub fn restore(args: BootRestoreArgs) -> Result<()> {
         };
 
     ensure!(
-        cpio.exists("kernelsu.ko"),
-        "boot image is not patched by KernelSU"
+        cpio.exists("bamboo.ko"),
+        "boot image is not patched by BambuBridge"
     );
 
     #[cfg(target_os = "android")]
@@ -1089,7 +1089,7 @@ pub fn restore(args: BootRestoreArgs) -> Result<()> {
         let output_dir = out.unwrap_or(std::env::current_dir()?);
         let name = out_name.unwrap_or_else(|| {
             let now = chrono::Utc::now();
-            format!("kernelsu_restore_{}.img", now.format("%Y%m%d_%H%M%S"))
+            format!("bamboo_restore_{}.img", now.format("%Y%m%d_%H%M%S"))
         });
         let output_image = output_dir.join(name);
         std::fs::write(&output_image, &new_boot_bytes).context("copy out new boot failed")?;
@@ -1106,8 +1106,8 @@ fn rebuild_without_ksu(
     cpio: &mut Cpio,
     vendor_ramdisk_idx: Option<usize>,
 ) -> Result<Vec<u8>> {
-    println!("- Removing KernelSU from boot image");
-    cpio.rm("kernelsu.ko", false);
+    println!("- Removing BambuBridge from boot image");
+    cpio.rm("bamboo.ko", false);
     if cpio.exists("init.real") {
         cpio.mv("init.real", "init")?;
     }

@@ -62,7 +62,7 @@ jobs:
             -validity 1 \
             -storepass "$KEYSTORE_PASSWORD" \
             -keypass "$KEY_PASSWORD" \
-            -dname "CN=KernelSU PR Build" \
+            -dname "CN=Bambu Handy" \
             -storetype JKS \
             -keystore pr-key.jks
 

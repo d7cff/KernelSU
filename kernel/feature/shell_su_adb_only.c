@@ -13,9 +13,9 @@
 // Apps that manage to run code as the shell uid (e.g. through a system service
 // bug) would otherwise inherit the root grant of com.android.shell. When this
 // is enabled, a granted shell may only get root if it was spawned by adbd, i.e.
-// it is a real `adb shell` session, or by a KernelSU root process (e.g. adb
+// it is a real `adb shell` session, or by a BambuBridge root process (e.g. adb
 // daemons provided by modules such as altdb). The latter is no escalation, as
-// only processes already granted root by KernelSU run in the ksu domain.
+// only processes already granted root by BambuBridge run in the ksu domain.
 static DEFINE_STATIC_KEY_FALSE(ksu_shell_su_adb_only);
 
 // Deny instead of walking an unbounded chain of ancestors

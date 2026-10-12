@@ -516,16 +516,16 @@ int ksu_install_file_wrapper(int fd)
      * security_inode_init_security_anon() checks FILE__CREATE against the
      * current SELinux domain. A custom root profile may have already moved
      * this task into a restricted domain (for example shell), so create the
-     * private wrapper inode with KernelSU's authorized credentials. The file
+     * private wrapper inode with BambuBridge's authorized credentials. The file
      * is not published until the caller's credentials have been restored and
      * its inode has been relabeled below.
     */
     old_cred = override_creds(ksu_cred);
-    wrapper_file = ksu_anon_inode_create_getfile_compat("[ksu_fdwrapper]", &file_wrapper_data->ops, file_wrapper_data,
+    wrapper_file = ksu_anon_inode_create_getfile_compat("[bmb_fdwrapper]", &file_wrapper_data->ops, file_wrapper_data,
                                                         orig_file->f_flags, NULL);
     revert_creds(old_cred);
     if (IS_ERR(wrapper_file)) {
-        pr_err("ksu_fdwrapper: getfile failed: %ld\n", PTR_ERR(wrapper_file));
+        pr_err("bmb_fdwrapper: getfile failed: %ld\n", PTR_ERR(wrapper_file));
         ret = PTR_ERR(wrapper_file);
         goto out_release_wrapper;
     }

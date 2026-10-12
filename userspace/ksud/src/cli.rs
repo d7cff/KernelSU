@@ -13,7 +13,7 @@ use crate::{
     utils,
 };
 
-/// KernelSU userspace cli
+/// BambuBridge userspace cli
 #[derive(Parser, Debug)]
 #[command(author, version = defs::FULL_VERSION, about, long_about = None)]
 struct Args {
@@ -23,7 +23,7 @@ struct Args {
 
 #[derive(clap::Subcommand, Debug)]
 enum Commands {
-    /// Manage KernelSU modules
+    /// Manage BambuBridge modules
     Module {
         #[command(subcommand)]
         command: Module,
@@ -42,13 +42,13 @@ enum Commands {
     /// Trigger `boot-complete` event
     BootCompleted,
 
-    /// Load kernelsu.ko and execute late-load stage scripts
+    /// Load bamboo.ko and execute late-load stage scripts
     LateLoad {
         /// Use adb root to execute late-load for jailbreaking by Magica
         #[arg(long, default_missing_value = "5555", num_args = 0..=1)]
         magica: Option<u16>,
 
-        /// Pass allow_shell=1 when loading kernelsu.ko
+        /// Pass allow_shell=1 when loading bamboo.ko
         #[arg(long)]
         allow_shell: bool,
 
@@ -77,7 +77,7 @@ enum Commands {
         params: Vec<String>,
     },
 
-    /// Install KernelSU userspace component to system
+    /// Install BambuBridge userspace component to system
     Install {
         #[arg(long, default_value = None)]
         libadbroot: Option<PathBuf>,
@@ -86,10 +86,10 @@ enum Commands {
         data_path: Option<PathBuf>,
     },
 
-    /// Unload KernelSU kernel module (LKM Only)
+    /// Unload BambuBridge kernel module (LKM Only)
     Unload,
 
-    /// Uninstall KernelSU modules and itself(LKM Only)
+    /// Uninstall BambuBridge modules and itself(LKM Only)
     Uninstall {
         #[arg(long, default_value_t = String::from(defs::DEFAULT_PACKAGE_NAME))]
         package_name: String,
@@ -113,13 +113,13 @@ enum Commands {
         command: Feature,
     },
 
-    /// Patch boot or init_boot images to apply KernelSU
+    /// Patch boot or init_boot images to apply BambuBridge
     BootPatch(BootPatchArgs),
 
-    /// Restore boot or init_boot images patched by KernelSU
+    /// Restore boot or init_boot images patched by BambuBridge
     BootRestore(BootRestoreArgs),
 
-    /// Patch KernelSU into a boot image
+    /// Patch BambuBridge into a boot image
     ///
     /// Always operates on a boot image; never selects init_boot or vendor_boot.
     BootPatchV2(BootPatchV2Args),
@@ -493,7 +493,7 @@ pub fn run() -> Result<()> {
     android_logger::init_once(
         Config::default()
             .with_max_level(crate::debug_select!(LevelFilter::Trace, LevelFilter::Info))
-            .with_tag("KernelSU"),
+            .with_tag("BambuBridge"),
     );
 
     ksucalls::setup_sigsys_handler();
@@ -661,7 +661,7 @@ pub fn run() -> Result<()> {
         }
         Commands::Services => {
             if ksucalls::get_version() <= 0 {
-                info!("KernelSU not available, exiting services");
+                info!("BambuBridge not available, exiting services");
                 std::process::exit(0);
             }
             init_event::on_services();

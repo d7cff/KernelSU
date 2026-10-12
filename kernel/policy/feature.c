@@ -21,7 +21,7 @@ static const char *const feature_names[KSU_FEATURE_MAX] = {
 };
 
 // Features forced by boot config. Written only while parsing module params
-// (before kernelsu_init), read-only afterwards.
+// (before bamboo_init), read-only afterwards.
 static u64 forced_values[KSU_FEATURE_MAX];
 static DECLARE_BITMAP(forced_mask, KSU_FEATURE_MAX);
 // Forced features whose value has not been applied successfully yet
@@ -47,7 +47,7 @@ static int parse_feature_id(const char *name, u32 *id)
 
 // force_feature=<name|id>:<value>[,<name|id>:<value>...]
 // May be specified multiple times. Invalid entries are skipped instead of
-// failing, as a param error would prevent KernelSU from loading at all.
+// failing, as a param error would prevent BambuBridge from loading at all.
 // This may run before the slab allocator is up (built-in), so don't allocate.
 static int force_feature_param_set(const char *val, const struct kernel_param *kp)
 {

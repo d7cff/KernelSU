@@ -30,7 +30,7 @@ on:
 
 jobs:
   build-kernelsu-ko:
-    name: Build kernelsu.ko for ${{ inputs.kmi }}
+    name: Build bamboo.ko for ${{ inputs.kmi }}
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/ylarod/ddk-min:${{ inputs.kmi }}-${{ inputs.ddk_release }}
@@ -40,7 +40,7 @@ jobs:
     - name: Checkout source code
       uses: actions/checkout@v7
 
-    - name: Build kernelsu.ko
+    - name: Build bamboo.ko
       env:
         PACKAGE_NAME: ${{ inputs.package_name }}
         EXPECTED_SIZE: ${{ inputs.expected_size }}
@@ -50,7 +50,7 @@ jobs:
 
         cd kernel
 
-        echo "=== Building kernelsu.ko for KMI: ${{ inputs.kmi }} ==="
+        echo "=== Building bamboo.ko for KMI: ${{ inputs.kmi }} ==="
 
         EXTRA_ARGS=""
         if [ -n "$PACKAGE_NAME" ]; then
@@ -74,8 +74,8 @@ jobs:
         mkdir -p $OUT_DIR
 
         # Copy with KMI-specific naming
-        OUTPUT_NAME="${{ inputs.kmi }}_kernelsu.ko"
-        cp kernelsu.ko "$OUT_DIR/$OUTPUT_NAME"
+        OUTPUT_NAME="${{ inputs.kmi }}_bamboo.ko"
+        cp bamboo.ko "$OUT_DIR/$OUTPUT_NAME"
         
         echo "Copied to: $OUT_DIR/$OUTPUT_NAME"
         ls -la "$OUT_DIR/$OUTPUT_NAME"
@@ -83,13 +83,13 @@ jobs:
         llvm-strip -d "$OUT_DIR/$OUTPUT_NAME"
         echo "Size after stripping: $(du -h "$OUT_DIR/$OUTPUT_NAME" | cut -f1)"
 
-    - name: Upload kernelsu.ko artifact
+    - name: Upload bamboo.ko artifact
       uses: actions/upload-artifact@v7
       with:
         name: aarch64-${{ inputs.kmi }}-lkm
-        path: /github/workspace/out/aarch64/${{ inputs.kmi }}_kernelsu.ko
+        path: /github/workspace/out/aarch64/${{ inputs.kmi }}_bamboo.ko
 
-    - name: Build kernelsu.ko for x64
+    - name: Build bamboo.ko for x64
       env:
         PACKAGE_NAME: ${{ inputs.package_name }}
         EXPECTED_SIZE: ${{ inputs.expected_size }}
@@ -127,7 +127,7 @@ jobs:
         make O=$KDIR security/selinux/built-in.a
         popd
         
-        echo "=== Building x64 kernelsu.ko for KMI: ${{ inputs.kmi }} ==="
+        echo "=== Building x64 bamboo.ko for KMI: ${{ inputs.kmi }} ==="
 
         EXTRA_ARGS=""
         if [ -n "$PACKAGE_NAME" ]; then
@@ -158,8 +158,8 @@ jobs:
         mkdir -p $OUT_DIR
 
         # Copy with KMI-specific naming
-        OUTPUT_NAME="${{ inputs.kmi }}_kernelsu.ko"
-        cp kernelsu.ko "$OUT_DIR/$OUTPUT_NAME"
+        OUTPUT_NAME="${{ inputs.kmi }}_bamboo.ko"
+        cp bamboo.ko "$OUT_DIR/$OUTPUT_NAME"
         
         echo "Copied to: $OUT_DIR/$OUTPUT_NAME"
         ls -la "$OUT_DIR/$OUTPUT_NAME"
@@ -167,8 +167,8 @@ jobs:
         llvm-strip -d "$OUT_DIR/$OUTPUT_NAME"
         echo "Size after stripping: $(du -h "$OUT_DIR/$OUTPUT_NAME" | cut -f1)"
         
-    - name: Upload x64 kernelsu.ko artifact
+    - name: Upload x64 bamboo.ko artifact
       uses: actions/upload-artifact@v7
       with:
         name: x86_64-${{ inputs.kmi }}-lkm
-        path: /github/workspace/out/x86_64/${{ inputs.kmi }}_kernelsu.ko
+        path: /github/workspace/out/x86_64/${{ inputs.kmi }}_bamboo.ko

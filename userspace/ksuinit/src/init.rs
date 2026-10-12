@@ -95,7 +95,7 @@ pub fn init() -> Result<()> {
     // Setup kernel log first
     setup_kmsg();
 
-    log::info!("Hello, KernelSU!");
+    log::info!("Hello, BambuBridge!");
 
     // mount /proc to access kernel interface
     let _dontdrop = prepare_mount();
@@ -103,12 +103,12 @@ pub fn init() -> Result<()> {
     // This relies on the fact that we have /proc mounted
     unlimit_kmsg();
 
-    if ksuinit::has_kernelsu() {
-        log::info!("KernelSU may be already loaded in kernel, skip!");
+    if ksuinit::has_bamboo() {
+        log::info!("BambuBridge may be already loaded in kernel, skip!");
     } else {
-        log::info!("Loading kernelsu.ko..");
-        if let Err(e) = load_module_from_path("/kernelsu.ko") {
-            log::error!("Cannot load kernelsu.ko: {:?}", e);
+        log::info!("Loading bamboo.ko..");
+        if let Err(e) = load_module_from_path("/bamboo.ko") {
+            log::error!("Cannot load bamboo.ko: {:?}", e);
         }
     }
 
@@ -131,6 +131,6 @@ fn load_module_from_path(path: &str) -> Result<()> {
     let buffer = std::fs::read(path).with_context(|| format!("Cannot read file {}", path))?;
     let params = std::fs::read("/ksu_config").unwrap_or_default();
     let params = unsafe { CString::from_vec_unchecked(params) };
-    log::info!("load kernelsu with params {params:?}");
+    log::info!("load bamboo with params {params:?}");
     ksuinit::load_module(&buffer, &params)
 }

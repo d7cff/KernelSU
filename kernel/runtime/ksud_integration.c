@@ -162,10 +162,10 @@ void ksu_handle_execveat_ksud(const char *path, struct user_arg_ptr *argv)
         if (!init_second_stage_executed && check_argv(*argv, 1, "second_stage", buf, sizeof(buf))) {
             pr_info("/system/bin/init second_stage executed\n");
             ksu_selinux_hide_handle_second_stage();
-            apply_kernelsu_rules();
+            apply_bamboo_rules();
             cache_sid();
             setup_ksu_cred();
-            // after apply_kernelsu_rules, so that selinux_hide has its sepolicy backup
+            // after apply_bamboo_rules, so that selinux_hide has its sepolicy backup
             ksu_feature_apply_forced();
             init_second_stage_executed = true;
         }
@@ -189,8 +189,8 @@ static ssize_t ksu_rc_pos = 0;
 const size_t ksu_rc_len = sizeof(KERNEL_SU_RC) - 1;
 
 // Prefer /metadata/watchdog/ when present, else /metadata.
-#define MODULE_RC_PATH_WATCHDOG "/metadata/watchdog/ksu/modules.rc"
-#define MODULE_RC_PATH_DEFAULT "/metadata/ksu/modules.rc"
+#define MODULE_RC_PATH_WATCHDOG "/metadata/watchdog/bmb/modules.rc"
+#define MODULE_RC_PATH_DEFAULT "/metadata/bmb/modules.rc"
 static char *module_rc_buf;
 static size_t module_rc_len;
 static ssize_t module_rc_pos;

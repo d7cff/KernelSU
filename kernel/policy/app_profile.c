@@ -69,7 +69,7 @@ void seccomp_filter_release(struct task_struct *tsk);
 // https://cs.android.com/android/_/android/kernel/common/+/5346453405bf12d7ed6003f45dd47b71744fe1be
 // Some 15-6.6 kernel have this backport while others don't have, e.g. Pixel 10
 // See also:
-// https://github.com/tiann/KernelSU/issues/3629
+// https://github.com/tiann/BambuBridge/issues/3629
 #define NEED_BACKPORT_COMPAT                                                                                           \
     LINUX_VERSION_CODE >= KERNEL_VERSION(6, 6, 0) && LINUX_VERSION_CODE < KERNEL_VERSION(6, 11, 0)
 

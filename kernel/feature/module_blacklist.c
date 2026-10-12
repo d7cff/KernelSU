@@ -23,7 +23,7 @@ static char block_modules[256];
 
 // The param may be parsed before the slab allocator is up (built-in), so copy
 // into a static buffer instead of allocating. Truncate rather than fail: a
-// param error would abort the whole KernelSU load.
+// param error would abort the whole BambuBridge load.
 static int block_modules_param_set(const char *val, const struct kernel_param *kp)
 {
     if (!val || !val[0])
@@ -87,6 +87,6 @@ void __exit ksu_module_blacklist_exit(void)
     // the pointer back (especially to the common NULL) could race that reader
     // into a NULL dereference. The merged string already contains any
     // pre-existing entries and lives on the kernel heap, so leaving it installed
-    // stays valid even after KernelSU is unloaded. The one-time, bounded
+    // stays valid even after BambuBridge is unloaded. The one-time, bounded
     // allocation is deliberately leaked.
 }
